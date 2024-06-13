@@ -21,7 +21,7 @@ const DEBUG = 0;
 
 const PORT = process.env.PORT || 3001;
 
-const URL = ['https://keebgram.azurewebsites.net/', 'http://localhost:3000']
+const URL = ['https://keebgram-v.vercel.app', 'http://localhost:3000']
 
 const io = new Server(server, {
   cors: {
