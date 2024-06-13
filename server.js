@@ -11,9 +11,21 @@ const app = express();
 
 const server = http.createServer(app);
 
+
+/*
+  Set DEBUG to 0 for production server, 1 for local debugging
+
+  99.99% of the time, you are going to want DEBUG set to 1
+*/
+const DEBUG = 0;
+
+const PORT = process.env.PORT || 3001;
+
+const URL = ['https://keebgram.azurewebsites.net/', 'http://localhost:3000']
+
 const io = new Server(server, {
   cors: {
-    origin: "http://localhost:3000", // Ensure this is the correct URL for your frontend
+    origin: URL[DEBUG] // Ensure this is the correct URL for your frontend
   },
 });
 
@@ -44,6 +56,6 @@ io.on('connection', (socket) => {
 });
 
 // Start the server
-server.listen(3001, () => {
-  console.log("Server running on port 3001");
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
