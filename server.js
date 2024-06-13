@@ -49,8 +49,8 @@ const io = new Server(server, {
 
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
-
   socket.on('post_created', () => {
+    console.log("Post created event")
     socket.broadcast.emit('refresh_posts');
   });
 
