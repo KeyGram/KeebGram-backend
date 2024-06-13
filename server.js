@@ -27,6 +27,10 @@ app.use("/api/vendors", vendorRoutes);
 
 app.use(express.static(__dirname + '/public'));
 
+app.get("/", (req, res) => {
+  return res.status(200).json({ message: "API running "});
+});
+
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
 

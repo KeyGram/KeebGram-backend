@@ -1,0 +1,4 @@
+{
+    "appService.defaultWebAppToDeploy": "/subscriptions/b1decd43-2e1a-47d6-97f6-de4d27eda256/resourceGroups/vsingh57/providers/Microsoft.Web/sites/KeebGram-Backend",
+    "appService.deploySubpath": "."
+}
