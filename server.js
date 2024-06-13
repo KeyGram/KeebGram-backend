@@ -8,25 +8,21 @@ const http = require("http");
 const { Server } = require('socket.io');
 
 const app = express();
-
 const server = http.createServer(app);
 
 /*
   Set DEBUG to 0 for production server, 1 for local debugging
-
-  99.99% of the time, you are going to want DEBUG set to 1
 */
 const DEBUG = 0;
 
 const PORT = process.env.PORT || 3001;
-
 const URL = ['https://keebgram-v.vercel.app', 'http://localhost:3000'];
 
 const corsOptions = {
-  origin: URL[DEBUG], // Allow only your frontend URL
-  methods: ['GET', 'POST', 'DELETE'], // Specify the methods allowed
-  allowedHeaders: ['Content-Type', 'Authorization'], // Specify the allowed headers
-  credentials: true, // Enable credentials (cookies, authorization headers, etc.)
+  origin: URL[DEBUG],
+  methods: ['GET', 'POST', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  credentials: true, // Enable credentials
 };
 
 app.use(cors(corsOptions));
@@ -40,18 +36,22 @@ app.use("/api/vendors", vendorRoutes);
 app.use(express.static(__dirname + '/public'));
 
 app.get("/", (req, res) => {
-  return res.status(200).json({ message: "API running "});
+  res.status(200).json({ message: "API running" });
 });
 
 const io = new Server(server, {
-  cors: corsOptions
+  cors: {
+    origin: URL[DEBUG],
+    methods: ['GET', 'POST'],
+    credentials: true, // Enable credentials for socket.io
+  },
 });
 
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
 
   socket.on('post_created', () => {
-    socket.broadcast.emit('refresh_posts')
+    socket.broadcast.emit('refresh_posts');
   });
 
   socket.on('disconnect', () => {
@@ -59,7 +59,6 @@ io.on('connection', (socket) => {
   });
 });
 
-// Start the server
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
 });
