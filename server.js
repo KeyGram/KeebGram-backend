@@ -19,6 +19,8 @@ const server = http.createServer(app);
 */
 const DEBUG = 0;
 
+const PORT = process.env.PORT || 3001;
+
 const URL = ['https://keebgram.azurewebsites.net/', 'http://localhost:3000']
 
 const io = new Server(server, {
@@ -54,6 +56,6 @@ io.on('connection', (socket) => {
 });
 
 // Start the server
-server.listen(3001, () => {
-  console.log("Server running on port 3001");
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
 });
