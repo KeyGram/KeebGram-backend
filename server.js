@@ -11,7 +11,6 @@ const app = express();
 
 const server = http.createServer(app);
 
-
 /*
   Set DEBUG to 0 for production server, 1 for local debugging
 
@@ -21,15 +20,16 @@ const DEBUG = 0;
 
 const PORT = process.env.PORT || 3001;
 
-const URL = ['https://keebgram-v.vercel.app', 'http://localhost:3000']
+const URL = ['https://keebgram-v.vercel.app', 'http://localhost:3000'];
 
-const io = new Server(server, {
-  cors: {
-    origin: URL[DEBUG] // Ensure this is the correct URL for your frontend
-  },
-});
+const corsOptions = {
+  origin: URL[DEBUG], // Allow only your frontend URL
+  methods: ['GET', 'POST', 'DELETE'], // Specify the methods allowed
+  allowedHeaders: ['Content-Type', 'Authorization'], // Specify the allowed headers
+  credentials: true, // Enable credentials (cookies, authorization headers, etc.)
+};
 
-app.use(cors());
+app.use(cors(corsOptions));
 app.use(express.json());
 
 app.use("/api/accounts", accountRoutes);
@@ -41,6 +41,10 @@ app.use(express.static(__dirname + '/public'));
 
 app.get("/", (req, res) => {
   return res.status(200).json({ message: "API running "});
+});
+
+const io = new Server(server, {
+  cors: corsOptions
 });
 
 io.on('connection', (socket) => {
