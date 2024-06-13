@@ -13,13 +13,13 @@ const server = http.createServer(app);
 /*
   Set DEBUG to 0 for production server, 1 for local debugging
 */
-const DEBUG = 0;
+const DEBUG = 1;
 
 const PORT = process.env.PORT || 3001;
 const URL = ['https://keebgram.vercel.app', 'http://localhost:3000'];
 
 const corsOptions = {
-  origin: URL[DEBUG],
+  origin: `${URL[DEBUG]}`,
   // methods: ['GET', 'POST', 'DELETE'],
   // allowedHeaders: ['Content-Type', 'Authorization'],
   // credentials: true, // Enable credentials
@@ -49,7 +49,7 @@ const io = new Server(server, {
 
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
-
+  
   socket.on('post_created', () => {
     socket.broadcast.emit('refresh_posts');
   });
