@@ -16,7 +16,7 @@ const server = http.createServer(app);
 const DEBUG = 0;
 
 const PORT = process.env.PORT || 3001;
-const URL = ['https://keebgram.vercel.app', 'http://localhost:3000'];
+const URL = ['https://keebgram.vercel.app/', 'http://localhost:3000'];
 
 const corsOptions = {
   origin: `${URL[DEBUG]}`,
