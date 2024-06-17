@@ -64,4 +64,23 @@ router.get("/next", (req, res) => {
     res.status(200).json({ nextId: nextId });
   });
 });
+
+router.get("/getLikedPosts", (req, res) => {
+  const { account_id } = req.query;
+  const query = "CALL get_liked_posts(?);";
+  
+  db.query(query, [account_id], (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send("Error retrieving liked posts");
+    }
+
+    if (results.length > 0) {
+      res.status(200).json(results);
+    } else {
+      res.status(404).send("No liked posts found");
+    }
+  });
+});
+
 module.exports = router;

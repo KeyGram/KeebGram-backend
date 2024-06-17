@@ -4,6 +4,7 @@ const accountRoutes = require("./apis/AccountAPI");
 const postRoutes = require("./apis/PostsAPI");
 const fileRoutes = require('./apis/FileAPI');
 const vendorRoutes = require('./apis/VendorAPI');
+const likeRoutes = require('./apis/LikesAPI');
 const http = require("http");
 const { Server } = require('socket.io');
 
@@ -32,6 +33,7 @@ app.use("/api/accounts", accountRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/images", fileRoutes);
 app.use("/api/vendors", vendorRoutes);
+app.use("/api/likes", likeRoutes);
 
 app.use(express.static(__dirname + '/public'));
 
