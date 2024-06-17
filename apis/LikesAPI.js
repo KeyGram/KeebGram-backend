@@ -23,14 +23,19 @@ router.get("/getLikesCount", (req, res) => {
 
 router.post("/add", (req, res) => {
   const { post_id, account_id } = req.body;
-  const query = "INSERT INTO likes (post_id, account_id) VALUES (?, ?)";
+  const query = "CALL like_post(?, ?, @ok); SELECT @ok as ok;";
 
   db.query(query, [post_id, account_id], (err, result) => {
     if (err) {
       console.error(err);
       return res.status(500).send("Error liking post");
     }
-    return res.status(201).send("Post Liked");
+    const ok = result[1][0].ok;
+    if (ok === 1) {
+      return res.status(201).send("Post Liked");
+    } else {
+      return res.status(409).send("Post already liked");
+    }
   });
 });
 
