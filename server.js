@@ -4,8 +4,11 @@ const accountRoutes = require("./apis/AccountAPI");
 const postRoutes = require("./apis/PostsAPI");
 const fileRoutes = require('./apis/FileAPI');
 const vendorRoutes = require('./apis/VendorAPI');
+const likeRoutes = require('./apis/LikesAPI');
+const commentsRoute = require('./apis/CommentsAPI');
 const http = require("http");
 const { Server } = require('socket.io');
+const jwt = require('jsonwebtoken');
 
 const app = express();
 const server = http.createServer(app);
@@ -13,7 +16,7 @@ const server = http.createServer(app);
 /*
   Set DEBUG to 0 for production server, 1 for local debugging
 */
-const DEBUG = 0;
+const DEBUG = 1;
 
 const PORT = process.env.PORT || 3001;
 const URL = ['https://keebgram.vercel.app/', 'http://localhost:3000'];
@@ -25,6 +28,7 @@ const corsOptions = {
   // credentials: true, // Enable credentials
 };
 
+
 app.use(cors(corsOptions));
 app.use(express.json());
 
@@ -32,6 +36,8 @@ app.use("/api/accounts", accountRoutes);
 app.use("/api/posts", postRoutes);
 app.use("/api/images", fileRoutes);
 app.use("/api/vendors", vendorRoutes);
+app.use("/api/likes", likeRoutes);
+app.use("/api/comments", commentsRoute);
 
 app.use(express.static(__dirname + '/public'));
 
@@ -53,6 +59,10 @@ io.on('connection', (socket) => {
     console.log("Post created event")
     socket.broadcast.emit('refresh_posts');
   });
+
+  socket.on('comment_created', () => {
+    socket.broadcast.emit('refresh_comments');
+  })
 
   socket.on('disconnect', () => {
     console.log(`User disconnected: ${socket.id}`);
