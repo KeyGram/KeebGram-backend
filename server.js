@@ -10,13 +10,15 @@ const http = require("http");
 const { Server } = require('socket.io');
 const jwt = require('jsonwebtoken');
 
+let url = "";
+
 const app = express();
 const server = http.createServer(app);
 
 /*
   Set DEBUG to 0 for production server, 1 for local debugging
 */
-const DEBUG = 1;
+const DEBUG = 0;
 
 const PORT = process.env.PORT || 3001;
 const URL = ['https://keebgram.vercel.app/', 'http://localhost:3000'];
@@ -70,5 +72,7 @@ io.on('connection', (socket) => {
 });
 
 server.listen(PORT, () => {
+  const serverAddress = server.address();
+  console.log(serverAddress)
   console.log(`Server running on port ${PORT}`);
 });
