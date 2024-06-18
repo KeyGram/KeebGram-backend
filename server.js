@@ -26,7 +26,7 @@ const PORT = process.env.PORT || 3001;
 const getDomainAddress = () => {
   if(PORT === 3001) {
     return `http://localhost:3000`
-  } else if(PORT === 8080) {
+  } else {
     return `https://keebgram.vercel.app/`
   }
 }
