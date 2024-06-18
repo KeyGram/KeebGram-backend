@@ -108,6 +108,29 @@ router.post("/create", (req, res) => {
       }
     })
   })
-  
+
+// Fetch vendor details by account ID
+router.get("/getByAccountId", (req, res) => {
+  const { account_id } = req.query;
+
+  if (!account_id) {
+    return res.status(400).send("Account ID is required");
+  }
+
+  const query = "SELECT * FROM vendors WHERE account_id = ?";
+
+  db.query(query, [account_id], (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send("Error fetching vendor data");
+    }
+
+    if (results.length === 0) {
+      return res.status(404).send("Vendor not found");
+    }
+
+    res.status(200).json(results[0]);
+  });
+});
 
 module.exports = router;
