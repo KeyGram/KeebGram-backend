@@ -21,6 +21,24 @@ router.get("/getLikesCount", (req, res) => {
     });
 });
 
+router.get("/isPostLiked", (req, res) => {
+  const { post_id, account_id } = req.query;
+  const query = "SELECT * FROM likes WHERE post_id = ? AND account_id = ?";
+
+  db.query(query, [post_id, account_id], (err, results) => {
+    if (err) {
+      res.status(500).send("Error during check if post has been liked");
+      return;
+    }
+
+    if (results.length > 0) {
+      return res.status(200).send(true);
+    } else {
+      return res.status(200).send(false);
+    }
+  });
+});
+
 router.post("/add", (req, res) => {
   const { post_id, account_id } = req.body;
   const query = "CALL like_post(?, ?, @ok); SELECT @ok as ok;";
