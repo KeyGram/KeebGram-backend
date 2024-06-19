@@ -16,10 +16,6 @@ const jwt = require('jsonwebtoken');
 const app = express();
 const server = http.createServer(app);
 
-/*
-  Set DEBUG to 0 for production server, 1 for local debugging
-*/
-// const DEBUG = 0;
 
 const PORT = process.env.PORT || 3001;
 // const URL = ['https://keebgram.vercel.app/', 'http://localhost:3001'];
