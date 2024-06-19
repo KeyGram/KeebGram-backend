@@ -1,27 +1,9 @@
 const express = require("express");
 const db = require("../db");
-const multer = require("multer");
-const path = require("path");
-
 const router = express.Router();
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => {
-    cb(null, "public/images/");
-  },
-  filename: (req, file, cb) => {
-    const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
-    cb(
-      null,
-      file.fieldname + "-" + uniqueSuffix + path.extname(file.originalname)
-    );
-  },
-});
-
-const upload = multer({ storage: storage });
-
 // Fetch products by vendor ID
-router.get("/getByVendorId", (req, res) => {
+router.get("/getProductsByVendorId", (req, res) => {
   const { vendorId } = req.query;
   console.log("Fetching products for vendor ID:", vendorId); // Debugging
 
@@ -41,7 +23,7 @@ router.get("/getByVendorId", (req, res) => {
 });
 
 // Fetch product by ID
-router.get("/getById", (req, res) => {
+router.get("/getProductById", (req, res) => {
   const { productId } = req.query;
 
   const query = "SELECT * FROM products WHERE product_id = ?";
@@ -66,29 +48,31 @@ router.get("/getById", (req, res) => {
   });
 });
 
-// Add a new product with image
-router.post("/createProductWithImage", upload.single("image"), (req, res) => {
-  const { name, description, price, unit_count, vendor_id } = req.body;
-  const imageFile = req.file;
+router.get("/next", (req, res) => {
+  const query = "SELECT MAX(product_id) AS last_id FROM products;";
 
-  if (
-    !name ||
-    !description ||
-    !price ||
-    !unit_count ||
-    !vendor_id ||
-    !imageFile
-  ) {
-    return res.status(400).send("All fields are required");
-  }
+  db.query(query, (err, results) => {
+    if (err) {
+      res.status(400).send("Error");
+      return;
+    }
+    // Assuming results[0] contains the AUTO_INCREMENT value
+    const nextId = results[0]?.last_id + 1;
 
-  const imagePath = path.join("images/posts", imageFile.filename); // Update to match posts directory
+    res.status(200).json({ nextId: nextId });
+  });
+});
+
+// Add a new product
+router.post("/create", (req, res) => {
+  const { name, description, price, unit_count, vendor_id, image_data } =
+    req.body;
 
   const query = "CALL create_product(?, ?, ?, ?, ?, ?, @ok); SELECT @ok AS ok;";
 
   db.query(
     query,
-    [name, description, price, unit_count, vendor_id, imagePath],
+    [name, description, price, unit_count, vendor_id, image_data],
     (err, results) => {
       if (err) {
         console.error("Error adding product:", err);
@@ -143,43 +127,5 @@ router.delete("/delete", (req, res) => {
     }
   });
 });
-
-router.put(
-  "/:productId/updateProductWithImage",
-  upload.single("image"),
-  (req, res) => {
-    const { productId } = req.params;
-    const { name, description, price, unit_count } = req.body;
-    const imageFile = req.file;
-
-    let query = `
-    UPDATE products 
-    SET 
-      name = ?, 
-      description = ?, 
-      price = ?, 
-      unit_count = ?
-  `;
-
-    const queryParams = [name, description, price, unit_count];
-
-    if (imageFile) {
-      const imagePath = path.join("images/products", imageFile.filename);
-      query += `, image_path = ?`;
-      queryParams.push(imagePath);
-    }
-
-    query += ` WHERE product_id = ?`;
-    queryParams.push(productId);
-
-    db.query(query, queryParams, (err, results) => {
-      if (err) {
-        console.error("Error updating product:", err);
-        return res.status(500).send("Error updating product");
-      }
-      res.status(200).send("Product updated successfully");
-    });
-  }
-);
 
 module.exports = router;
