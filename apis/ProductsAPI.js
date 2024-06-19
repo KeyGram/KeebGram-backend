@@ -7,7 +7,7 @@ const router = express.Router();
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "public/images/products");
+    cb(null, "public/images/");
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + "-" + Math.round(Math.random() * 1e9);
@@ -82,7 +82,7 @@ router.post("/createProductWithImage", upload.single("image"), (req, res) => {
     return res.status(400).send("All fields are required");
   }
 
-  const imagePath = path.join("images/products", imageFile.filename);
+  const imagePath = path.join("images/posts", imageFile.filename); // Update to match posts directory
 
   const query = "CALL create_product(?, ?, ?, ?, ?, ?, @ok); SELECT @ok AS ok;";
 
