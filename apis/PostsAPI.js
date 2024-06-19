@@ -83,4 +83,60 @@ router.get("/getLikedPosts", (req, res) => {
   });
 });
 
+router.get('/get/:id', (req, res) => {
+  const post_id = req.params.id;
+
+  const query = "SELECT * FROM posts WHERE post_id = ?";
+
+  db.query(query, [post_id], (err, results) => {
+    if(err) {
+      res.status(400).send("Error")
+    }
+
+    res.status(200).json(results)
+  })
+})
+
+router.post('/edit/:id', (req, res) => {
+  const { post_id, account_id, content_text, content_image, created_at } = req.body;
+
+  const query = "CALL edit_post(?, ?, ?, ?, ?, @ok); SELECT @ok as ok;";
+
+  db.query(query, [post_id, account_id, content_text, content_image, formatDate(created_at)], (err, results) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).send("Error");
+    }
+
+    const ok = results[1][0].ok;
+
+    if (ok === 1) {
+      res.status(200).send("Post updated successfully");
+    } else {
+      res.status(400).send("Failed to update post");
+    }
+  });
+});
+
+router.post('/delete', (req, res) => {
+  const { post_id } = req.body;
+
+  const query = "DELETE FROM posts WHERE post_id = ?";
+
+  db.query(query, [post_id], (err, results) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).send("Error");
+    }
+
+    if(results.affectedRows > 0) {
+      res.status(200).send("Post deleted successfully")
+    } else {
+      res.status(400).send("Error deleting posts")
+    }
+  })
+})
+
+
+
 module.exports = router;
