@@ -11,19 +11,25 @@ const http = require("http");
 const { Server } = require('socket.io');
 const jwt = require('jsonwebtoken');
 
+
+
 const app = express();
 const server = http.createServer(app);
 
-/*
-  Set DEBUG to 0 for production server, 1 for local debugging
-*/
-const DEBUG = 1;
 
 const PORT = process.env.PORT || 3001;
-const URL = ['https://keebgram.vercel.app', 'http://localhost:3000'];
+// const URL = ['https://keebgram.vercel.app/', 'http://localhost:3001'];
+
+const getDomainAddress = () => {
+  if(PORT === 3001) {
+    return `http://localhost:3000`
+  } else {
+    return `https://keebgram.vercel.app/`
+  }
+}
 
 const corsOptions = {
-  origin: URL[DEBUG],
+  origin: getDomainAddress(),
   // methods: ['GET', 'POST', 'DELETE'],
   // allowedHeaders: ['Content-Type', 'Authorization'],
   // credentials: true, // Enable credentials
@@ -49,7 +55,7 @@ app.get("/", (req, res) => {
 
 const io = new Server(server, {
   cors: {
-    origin: URL[DEBUG],
+    origin: getDomainAddress(),
     methods: ['GET', 'POST'],
     credentials: true, // Enable credentials for socket.io
   },
@@ -57,8 +63,8 @@ const io = new Server(server, {
 
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
-
   socket.on('post_created', () => {
+    console.log("Post created event")
     socket.broadcast.emit('refresh_posts');
   });
 
@@ -72,5 +78,6 @@ io.on('connection', (socket) => {
 });
 
 server.listen(PORT, () => {
-  console.log(`Server running on port ${PORT}`);
+
+  console.log(`Server running on port ${PORT} on ${getDomainAddress()}`);
 });
