@@ -65,7 +65,7 @@ router.get("/next", (req, res) => {
   });
 });
 
-router.get("/getLikedPosts", (req, res) => {
+router.get("/getLiked", (req, res) => {
   const { account_id } = req.query;
   const query = "CALL get_liked_posts(?);";
   
