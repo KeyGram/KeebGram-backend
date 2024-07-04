@@ -9,7 +9,6 @@ const commentsRoute = require('./apis/CommentsAPI');
 const productsAPI = require("./apis/ProductsAPI");
 const http = require("http");
 const { Server } = require('socket.io');
-const jwt = require('jsonwebtoken');
 
 
 
