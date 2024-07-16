@@ -8,11 +8,10 @@ const likeRoutes = require('./apis/LikesAPI');
 const commentsRoute = require('./apis/CommentsAPI');
 const productsAPI = require("./apis/ProductsAPI");
 const addressesAPI = require("./apis/AddressesAPI");
+const designsRoute = require("./apis/DesignsAPI");
 const http = require("http");
-const { Server } = require('socket.io');
-const jwt = require('jsonwebtoken');
-
-
+const {Server} = require("socket.io");
+const jwt = require("jsonwebtoken");
 
 const app = express();
 const server = http.createServer(app);
@@ -36,7 +35,6 @@ const corsOptions = {
   // credentials: true, // Enable credentials
 };
 
-
 app.use(cors(corsOptions));
 app.use(express.json());
 
@@ -46,13 +44,14 @@ app.use("/api/images", fileRoutes);
 app.use("/api/vendors", vendorRoutes);
 app.use("/api/likes", likeRoutes);
 app.use("/api/comments", commentsRoute);
+app.use("/api/designs", designsRoute);
 app.use("/api/products", productsAPI);
 app.use("/api/addresses", addressesAPI);
 
-app.use(express.static(__dirname + '/public'));
+app.use(express.static(__dirname + "/public"));
 
 app.get("/", (req, res) => {
-  res.status(200).json({ message: "API running" });
+    res.status(200).json({message: "API running"});
 });
 
 const io = new Server(server, {
@@ -70,13 +69,13 @@ io.on('connection', (socket) => {
     socket.broadcast.emit('refresh_posts');
   });
 
-  socket.on('comment_created', () => {
-    socket.broadcast.emit('refresh_comments');
-  })
+    socket.on("comment_created", () => {
+        socket.broadcast.emit("refresh_comments");
+    });
 
-  socket.on('disconnect', () => {
-    console.log(`User disconnected: ${socket.id}`);
-  });
+    socket.on("disconnect", () => {
+        console.log(`User disconnected: ${socket.id}`);
+    });
 });
 
 server.listen(PORT, () => {
