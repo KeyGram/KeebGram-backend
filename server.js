@@ -7,6 +7,7 @@ const vendorRoutes = require('./apis/VendorAPI');
 const likeRoutes = require('./apis/LikesAPI');
 const commentsRoute = require('./apis/CommentsAPI');
 const productsAPI = require("./apis/ProductsAPI");
+const addressesAPI = require("./apis/AddressesAPI");
 const http = require("http");
 const { Server } = require('socket.io');
 const jwt = require('jsonwebtoken');
@@ -46,6 +47,7 @@ app.use("/api/vendors", vendorRoutes);
 app.use("/api/likes", likeRoutes);
 app.use("/api/comments", commentsRoute);
 app.use("/api/products", productsAPI);
+app.use("/api/addresses", addressesAPI);
 
 app.use(express.static(__dirname + '/public'));
 
