@@ -7,6 +7,7 @@ const vendorRoutes = require("./apis/VendorAPI");
 const likeRoutes = require("./apis/LikesAPI");
 const commentsRoute = require("./apis/CommentsAPI");
 const designsRoute = require("./apis/DesignsAPI");
+const productsAPI = require('./apis/ProductsAPI');
 
 const http = require("http");
 const {Server} = require("socket.io");
