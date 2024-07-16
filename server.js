@@ -2,17 +2,16 @@ const express = require("express");
 const cors = require("cors");
 const accountRoutes = require("./apis/AccountAPI");
 const postRoutes = require("./apis/PostsAPI");
-const fileRoutes = require("./apis/FileAPI");
-const vendorRoutes = require("./apis/VendorAPI");
-const likeRoutes = require("./apis/LikesAPI");
-const commentsRoute = require("./apis/CommentsAPI");
+const fileRoutes = require('./apis/FileAPI');
+const vendorRoutes = require('./apis/VendorAPI');
+const likeRoutes = require('./apis/LikesAPI');
+const commentsRoute = require('./apis/CommentsAPI');
+const productsAPI = require("./apis/ProductsAPI");
+const addressesAPI = require("./apis/AddressesAPI");
 const designsRoute = require("./apis/DesignsAPI");
-
 const http = require("http");
 const {Server} = require("socket.io");
 const jwt = require("jsonwebtoken");
-
-
 
 const app = express();
 const server = http.createServer(app);
@@ -47,6 +46,7 @@ app.use("/api/likes", likeRoutes);
 app.use("/api/comments", commentsRoute);
 app.use("/api/designs", designsRoute);
 app.use("/api/products", productsAPI);
+app.use("/api/addresses", addressesAPI);
 
 app.use(express.static(__dirname + "/public"));
 
