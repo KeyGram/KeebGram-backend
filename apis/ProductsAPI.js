@@ -65,14 +65,36 @@ router.get("/next", (req, res) => {
 
 // Add a new product
 router.post("/create", (req, res) => {
-  const { name, description, price, unit_count, vendor_id, image_data } =
-    req.body;
+  const {
+    name,
+    description,
+    price,
+    unit_count,
+    vendor_id,
+    image_data,
+    alpha,
+    modifier,
+    accent,
+    legend,
+  } = req.body;
 
-  const query = "CALL create_product(?, ?, ?, ?, ?, ?, @ok); SELECT @ok AS ok;";
+  const query =
+    "CALL create_product(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, @ok); SELECT @ok AS ok;";
 
   db.query(
     query,
-    [name, description, price, unit_count, vendor_id, image_data],
+    [
+      name,
+      description,
+      price,
+      unit_count,
+      vendor_id,
+      image_data,
+      alpha,
+      modifier,
+      accent,
+      legend,
+    ],
     (err, results) => {
       if (err) {
         console.error("Error adding product:", err);
