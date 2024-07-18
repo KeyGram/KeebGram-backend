@@ -12,6 +12,7 @@ const designsRoute = require("./apis/DesignsAPI");
 const notificationsRoute = require('./apis/NotificationsAPI');
 const http = require("http");
 const {Server} = require("socket.io");
+const axios = require('axios')
 
 
 const app = express();
@@ -96,6 +97,22 @@ io.on('connection', (socket) => {
         console.log(`User disconnected: ${socket.id}`);
     });
     
+});
+
+app.get('/keycaps', async (req, res) => {
+  const { alpha, modifier, accent, legend } = req.query;
+
+  try {
+    const url = `https://keeb-finder.com/keycaps?ms_innerColors=%23${alpha}&ms_outerColors=%23${modifier}&ms_accentColors=%23${accent}&ms_fontColors=%23${legend}&ms_inStock=In+Stock`;
+
+    const response = await axios.get(url);
+    const html = response.data;
+
+    res.send(html);
+  } catch (error) {
+    console.error('Error fetching the page:', error);
+    res.status(500).send('Failed to fetch keycaps');
+  }
 });
 
 server.listen(PORT, () => {
