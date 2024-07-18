@@ -5,7 +5,7 @@ const router = express.Router();
 router.get("/getLikesCount", (req, res) => {
     const { post_id } = req.query;
 
-    console.log("Post ID in /getLikesCount: " + post_id);
+    // console.log("Post ID in /getLikesCount: " + post_id);
     const sql = "CALL get_likes_count(?);";
 
     db.query(sql, [post_id], (err, result) => {
