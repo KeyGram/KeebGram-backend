@@ -5,7 +5,7 @@ const router = express.Router();
 router.get("/getLikesCount", (req, res) => {
     const { post_id } = req.query;
 
-    console.log("Post ID in /getLikesCount: " + post_id);
+    // console.log("Post ID in /getLikesCount: " + post_id);
     const sql = "CALL get_likes_count(?);";
 
     db.query(sql, [post_id], (err, result) => {
@@ -14,7 +14,7 @@ router.get("/getLikesCount", (req, res) => {
         return res.status(500).send("Error retrieving like count");
       }
       if (result.length > 0) {
-      return res.status(201).json(result);
+        return res.status(201).json(result[0][0]['COUNT(*)']);
       } else {
         return res.status(404).send("Error with post id");
       }
