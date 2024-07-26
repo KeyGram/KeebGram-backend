@@ -193,6 +193,54 @@ router.post("/login", (req, res) => {
       }
     });
   });
+
+  router.post("/registerGoogleAccount", (req, res) => {
+    const { data } = req.body;
+      // Prepare the call to the stored procedure
+  // @ok is the output parameter that we capture in the SELECT statement.
+  const sql = "CALL create_account(?, ?, @ok); SELECT @ok AS ok;";
+
+  db.query(sql, [data?.email, ''], (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send("Error adding account");
+    }
+
+    // Extract the value of ok from the results
+    const ok = results[1][0].ok;
+    if (ok === 1) {
+      // return res.status(201).send("Account added successfully");
+      query = "SELECT * FROM accounts WHERE email = ?";
+      db.query(query, [data?.email], (err, results) => {
+        if (err) {
+          res.status(500).send("Error during login");
+          return;
+        }
+        if (results.length > 0) {
+          const user = results[0];
+          delete user.password;
+
+          res.status(201).json(user);
+        }
+      });
+    } else if (ok === 0) {
+      // return res.status(409).send("Account with the same email already exists");
+      query = "SELECT * FROM accounts WHERE email = ?";
+      db.query(query, [data?.email], (err, results) => {
+        if (err) {
+          res.status(500).send("Error during login");
+          return;
+        }
+        if (results.length > 0) {
+          const user = results[0];
+          delete user.password;
+
+          res.status(409).json(user);
+        }
+      });
+    }
+  });
+  })
   
 
 module.exports = router;
