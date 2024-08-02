@@ -76,9 +76,7 @@ router.post("/create", (req, res) => {
     return res.status(400).send("Password must be less than 45 characters.");
   }
 
-  const token = jwt.sign({ email: email }, "keebgram-verify", {
-    expiresIn: "1h",
-  });
+  const token = jwt.sign({ email: email }, "keebgram-verify");
 
   // Prepare the call to the stored procedure
   // @ok is the output parameter that we capture in the SELECT statement.
