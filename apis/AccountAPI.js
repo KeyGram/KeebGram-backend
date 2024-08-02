@@ -1,7 +1,7 @@
 const express = require("express");
 const db = require("../db");
-const jwt = require('jsonwebtoken');
-const nodemailer = require('nodemailer');
+const jwt = require("jsonwebtoken");
+const nodemailer = require("nodemailer");
 const { FRONTEND_URL, DEBUG } = require("../config");
 
 const router = express.Router();
@@ -19,10 +19,10 @@ router.get("/getAll", (req, res) => {
 
       res.status(200).json(users);
     } else {
-      res.status(404).send("No users found.")
+      res.status(404).send("No users found.");
     }
-  })
-})
+  });
+});
 
 router.get("/getOneByEmail", (req, res) => {
   const { email } = req.query;
@@ -64,8 +64,8 @@ router.get("/getOneByID", (req, res) => {
     } else {
       res.status(404).send("User not found");
     }
-  })
-})
+  });
+});
 
 // Route to add an account
 router.post("/create", (req, res) => {
@@ -76,7 +76,9 @@ router.post("/create", (req, res) => {
     return res.status(400).send("Password must be less than 45 characters.");
   }
 
-  const token = jwt.sign({ email: email }, 'keebgram-verify', { expiresIn: '1h' });
+  const token = jwt.sign({ email: email }, "keebgram-verify", {
+    expiresIn: "1h",
+  });
 
   // Prepare the call to the stored procedure
   // @ok is the output parameter that we capture in the SELECT statement.
@@ -206,7 +208,7 @@ router.post("/registerGoogleAccount", (req, res) => {
   // @ok is the output parameter that we capture in the SELECT statement.
   const sql = "CALL create_account(?, ?, @ok); SELECT @ok AS ok;";
 
-  db.query(sql, [data?.email, ''], (err, results) => {
+  db.query(sql, [data?.email, ""], (err, results) => {
     if (err) {
       console.error(err);
       return res.status(500).send("Error adding account");
@@ -246,33 +248,70 @@ router.post("/registerGoogleAccount", (req, res) => {
       });
     }
   });
-})
+});
 
 router.post("/verify", (req, res) => {
-  const { token } = req.query;
+  const { token } = req.body;
 
   try {
-    const decode = jwt.verify(token, 'keebgram-verify');
-    console.log(decode);
+    const decode = jwt.verify(token, "keebgram-verify");
+
+    var query = "SELECT * FROM accounts WHERE verification_token = ?";
+
+    db.query(query, [token], (err, results) => {
+      if (err) {
+        res.status(500).send("Error fetching token");
+        return;
+      }
+
+      if (results.length > 0) {
+        const user = results[0];
+
+        if(user?.verification_token === token) {
+          console.log("token match")
+
+          query = "UPDATE accounts SET is_verified = 1 WHERE email = ?";
+
+          db.query(query, [user?.email], (err, results) => {
+            if(err) {
+              res.status(500).send("Error updating account");
+              return;
+            }
+
+            console.log(results);
+
+            if (results?.changedRows > 0) {
+              res.status(200).json({message: "Account verified successfully", user: user });
+            } else {
+              res.status(400).send("Account already verified");
+            }
+          })
+        } 
+      }
+    });
   } catch (error) {
-    res.status(400).send("Invalid or expired token");
+    if (error.name === "TokenExpiredError") {
+      res.status(401).send("Token Expired");
+    } else {
+      res.status(404).json({message: "Matching token not found", error: error});
+    }
   }
-})
+});
 
 const sendVerificationEmail = (email, token) => {
   const transporter = nodemailer.createTransport({
-    service: 'gmail',
+    service: "gmail",
     auth: {
-      user: 'keebgram@gmail.com',
-      pass: 'lntl aopp qvgg urwd'
-    }
+      user: "keebgram@gmail.com",
+      pass: "lntl aopp qvgg urwd",
+    },
   });
 
   const mailOption = {
-    from: 'keebgram@gmail.com',
+    from: "keebgram@gmail.com",
     to: email,
     subject: "KeebGram Email Verification",
-    text: `Please verify your account by clicking the following link: ${FRONTEND_URL[DEBUG]}/verify/token=${token}`
+    text: `Please verify your account by clicking the following link: ${FRONTEND_URL[DEBUG]}/verify/token=${token}`,
   };
 
   transporter.sendMail(mailOption, (error, info) => {
@@ -281,8 +320,7 @@ const sendVerificationEmail = (email, token) => {
     } else {
       console.log("Email sent: " + info.response);
     }
-  })
-}
-
+  });
+};
 
 module.exports = router;
