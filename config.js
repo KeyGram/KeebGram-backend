@@ -1,4 +1,4 @@
-const DEBUG = 1;
+const DEBUG = 0;
 
 const API_URL = [
   "https://keebgram-backend.azurewebsites.net",
