@@ -44,6 +44,23 @@ router.get("/get/:id", (req, res) => {
   });
 });
 
+router.get("/getReported", (req, res) => {
+  const query = "SELECT * from comments c WHERE c.is_reported > 0";
+
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send("Error retrieving reported comments");
+    }
+
+    if (results.length > 0) {
+      res.status(200).json(results);
+    } else {
+      res.status(204).send("No reported comments found");
+    }
+  });
+});
+
 router.post("/edit/:id", (req, res) => {
   const { comment_id, post_id, account_id, content, comment_date } = req.body;
 
@@ -69,6 +86,29 @@ router.post("/edit/:id", (req, res) => {
   );
 });
 
+router.post("/setReported/:id", (req, res) => {
+  const { comment_id, report_id } = req.body;
+  const query = "UPDATE comments SET is_reported = ? WHERE comment_id = ?"
+
+  db.query(
+    query,
+    [report_id, comment_id],
+    (err, results) => {
+      if (err) {
+        console.error("Database error: ", err);
+        return res.status(500).send("Error");
+      }
+
+      const ok = results.affectedRows;
+      if (ok === 1) {
+        res.status(200).send("Comment reported successfully");
+      } else {
+        res.status(400).send("Failed to report comment");
+      }
+    }
+  );
+});
+
 router.post("/create", (req, res) => {
   const { post_id, account_id, content } = req.body?.comment;
 
@@ -86,6 +126,24 @@ router.post("/create", (req, res) => {
       res.status(201).send("Comment created");
     } else {
       res.status(400).send("Error posting comment");
+    }
+  });
+});
+
+router.post("/removeReport", (req, res) => {
+  const { comment_id } = req.body;
+  const query = "UPDATE comments SET is_reported = 0 WHERE comment_id = ?"
+
+  db.query(query, [comment_id], (err, results) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).send("Error");
+    }
+
+    if (results.affectedRows > 0) {
+      res.status(200).send("Comment Report deleted successfully");
+    } else {
+      res.status(400).send("Error deleting comment report");
     }
   });
 });
