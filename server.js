@@ -14,6 +14,7 @@ const productsRoutes = require("./apis/ProductsAPI");
 const addressesRoutes = require("./apis/AddressesAPI");
 const designsRoute = require("./apis/DesignsAPI");
 const notificationsRoute = require('./apis/NotificationsAPI');
+const reportsRoute = require('./apis/ReportsAPI');
 
 const app = express();
 const server = http.createServer(app);
@@ -43,6 +44,7 @@ app.use("/api/designs", designsRoute);
 app.use("/api/products", productsRoutes);
 app.use("/api/addresses", addressesRoutes);
 app.use('/api/notifications', notificationsRoute);
+app.use("/api/reports", reportsRoute);
 
 app.use(express.static(__dirname + "/public"));
 
