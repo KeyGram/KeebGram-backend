@@ -16,7 +16,7 @@ router.get("/getAll", (req, res) => {
 
       res.status(200).json(applications);
     } else {
-      res.status(400).send("No applications found.");
+      res.status(204).send("No applications found.");
     }
   });
 });
