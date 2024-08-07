@@ -130,10 +130,37 @@ router.post("/create", (req, res) => {
       return res.status(409).send("Account with the same email already exists");
     }
   });
-  
-  router.post("/update", (req, res) => {
-    const {
-      email,
+});
+
+router.post("/update", (req, res) => {
+  const {
+    email,
+    firstName,
+    lastName,
+    displayName,
+    country,
+    birthdate,
+    gender,
+    language,
+  } = req.body;
+
+  const query = `
+      UPDATE accounts 
+      SET 
+        first_name = ?, 
+        last_name = ?, 
+        display_name = ?, 
+        country = ?, 
+        birthdate = ?, 
+        gender = ?, 
+        language = ?, 
+        setup_finished = 1
+      WHERE email = ?;
+    `;
+
+  db.query(
+    query,
+    [
       firstName,
       lastName,
       displayName,
@@ -210,7 +237,7 @@ router.post("/registerGoogleAccount", (req, res) => {
   const { data } = req.body;
   // Prepare the call to the stored procedure
   // @ok is the output parameter that we capture in the SELECT statement.
-  const sql = "CALL create_account(?, ?, @ok); SELECT @ok AS ok;";
+  const sql = "CALL create_account_google(?, ?, @ok); SELECT @ok AS ok;";
 
   db.query(sql, [data?.email, ""], (err, results) => {
     if (err) {
