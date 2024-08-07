@@ -130,37 +130,10 @@ router.post("/create", (req, res) => {
       return res.status(409).send("Account with the same email already exists");
     }
   });
-});
-
-router.post("/update", (req, res) => {
-  const {
-    email,
-    firstName,
-    lastName,
-    displayName,
-    country,
-    birthdate,
-    gender,
-    language,
-  } = req.body;
-
-  const query = `
-      UPDATE accounts 
-      SET 
-        first_name = ?, 
-        last_name = ?, 
-        display_name = ?, 
-        country = ?, 
-        birthdate = ?, 
-        gender = ?, 
-        language = ?, 
-        setup_finished = 1
-      WHERE email = ?;
-    `;
-
-  db.query(
-    query,
-    [
+  
+  router.post("/update", (req, res) => {
+    const {
+      email,
       firstName,
       lastName,
       displayName,
