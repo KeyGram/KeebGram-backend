@@ -14,6 +14,7 @@ const productsRoutes = require("./apis/ProductsAPI");
 const addressesRoutes = require("./apis/AddressesAPI");
 const designsRoute = require("./apis/DesignsAPI");
 const notificationsRoute = require('./apis/NotificationsAPI');
+const reportsRoute = require('./apis/ReportsAPI');
 
 const app = express();
 const server = http.createServer(app);
@@ -25,13 +26,17 @@ const getDomainAddress = () => {
 
 const corsOptions = {
   origin: getDomainAddress(),
-  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization'],
   credentials: true, // Enable credentials
+  preflightContinue: false,
+  optionsSuccessStatus: 204
 };
+
 
 app.use(cors(corsOptions));
 app.use(express.json());
+app.options('*', cors(corsOptions));
 
 app.use("/api/accounts", accountRoutes);
 app.use("/api/posts", postRoutes);
@@ -43,6 +48,7 @@ app.use("/api/designs", designsRoute);
 app.use("/api/products", productsRoutes);
 app.use("/api/addresses", addressesRoutes);
 app.use('/api/notifications', notificationsRoute);
+app.use("/api/reports", reportsRoute);
 
 app.use(express.static(__dirname + "/public"));
 

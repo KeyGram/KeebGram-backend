@@ -77,7 +77,24 @@ router.get("/getLiked", (req, res) => {
     if (results.length > 0) {
       res.status(200).json(results);
     } else {
-      res.status(404).send("No liked posts found");
+      res.status(204).send("No liked posts found");
+    }
+  });
+});
+
+router.get("/getReported", (req, res) => {
+  const query = "SELECT * from posts p WHERE p.is_reported > 0";
+
+  db.query(query, (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send("Error retrieving reported posts");
+    }
+
+    if (results.length > 0) {
+      res.status(200).json(results);
+    } else {
+      res.status(204).send("No reported posts found");
     }
   });
 });
@@ -94,6 +111,29 @@ router.get("/get/:id", (req, res) => {
 
     res.status(200).json(results);
   });
+});
+
+router.post("/setReported/:id", (req, res) => {
+  const { post_id, report_id } = req.body;
+  const query = "UPDATE posts SET is_reported = ? WHERE post_id = ?"
+
+  db.query(
+    query,
+    [report_id, post_id],
+    (err, results) => {
+      if (err) {
+        console.error("Database error: ", err);
+        return res.status(500).send("Error");
+      }
+      
+      const ok = results.affectedRows;
+      if (ok === 1) {
+        res.status(200).send("Post reported successfully");
+      } else {
+        res.status(400).send("Failed to report post");
+      }
+    }
+  );
 });
 
 router.post("/edit/:id", (req, res) => {
@@ -120,6 +160,24 @@ router.post("/edit/:id", (req, res) => {
       }
     }
   );
+});
+
+router.post("/removeReport", (req, res) => {
+  const { post_id } = req.body;
+  const query = "UPDATE posts SET is_reported = 0 WHERE post_id = ?"
+
+  db.query(query, [post_id], (err, results) => {
+    if (err) {
+      console.error("Database error:", err);
+      return res.status(500).send("Error");
+    }
+
+    if (results.affectedRows > 0) {
+      res.status(200).send("Post Report deleted successfully");
+    } else {
+      res.status(400).send("Error deleting post report");
+    }
+  });
 });
 
 router.post("/delete", (req, res) => {
