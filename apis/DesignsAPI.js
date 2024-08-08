@@ -32,6 +32,24 @@ router.get("/user/:userId", (req, res) => {
     });
 });
 
+router.get("/getById", (req, res) => {
+    const {design_id} = req.query
+    const query = "SELECT * FROM Designs WHERE design_id = ?";
+
+    db.query(query, [design_id], (err, results) => {
+        if (err) {
+            return res.status(500).send("Error retrieving designs for user");
+        }
+        if (results.length > 0) {
+            res.status(200).json(results);
+        } else {
+            res.status(404).send("No designs found for this user.");
+        }
+    })
+
+
+})
+
 router.post("/create", (req, res) => {
     const {
         user_id,
