@@ -26,16 +26,16 @@ router.get("/getAll", (req, res) => {
   });
 });
 router.post("/create", (req, res) => {
-  const { account_id, content_text, content_image } = req.body;
-
-  const query = "CALL create_post(?, ?, ?, ?, @ok); SELECT @ok AS ok;";
+  const { account_id, content_text, content_image, design_id } = req.body;
+  console.log(design_id)
+  const query = "CALL create_post(?, ?, ?, ?, ?, @ok); SELECT @ok AS ok;";
   const date = formatDate(Date.now());
   db.query(
     query,
-    [account_id, content_text, content_image, date],
+    [account_id, content_text, content_image, date, design_id],
     (err, results) => {
       if (err) {
-        console.error(err);
+        console.log(err);
         return res.status(500).send("Error adding post");
       }
 

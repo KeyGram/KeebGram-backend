@@ -237,7 +237,7 @@ router.post("/registerGoogleAccount", (req, res) => {
   const { data } = req.body;
   // Prepare the call to the stored procedure
   // @ok is the output parameter that we capture in the SELECT statement.
-  const sql = "CALL create_account(?, ?, @ok); SELECT @ok AS ok;";
+  const sql = "CALL create_account_google(?, ?, @ok); SELECT @ok AS ok;";
 
   db.query(sql, [data?.email, ""], (err, results) => {
     if (err) {
