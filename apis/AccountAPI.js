@@ -184,6 +184,8 @@ router.post("/update", (req, res) => {
 router.delete("/delete", (req, res) => {
   const { email } = req.query; // Assuming email is passed as a query parameter
 
+  console.log(email);
+
   const query = "DELETE FROM accounts WHERE email = ?";
 
   db.query(query, [email], (err, result) => {
@@ -193,6 +195,8 @@ router.delete("/delete", (req, res) => {
       return;
     }
 
+    console.log(result);
+    
     if (result.affectedRows === 1) {
       res.status(200).send("Account deleted successfully");
     } else {
