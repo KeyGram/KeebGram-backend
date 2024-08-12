@@ -49,6 +49,26 @@ router.post("/create", (req, res) => {
   );
 });
 
+router.delete('/delete', (req, res) => {
+  const {post_id} = req.query;
+
+  const query = "DELETE FROM posts WHERE post_id = ?";
+
+  db.query(query, [post_id], (err, results) => {
+    if (err) {
+      console.error("Error deleting post: ", err);
+      res.status(500).send("Error deleting post");
+      return;
+    }
+
+    if (results.affectedRows === 1) {
+      res.status(200).send("Post deleted successfully");
+    } else {
+      res.status(404).send("Post not found");
+    }
+  })
+})
+
 router.get("/next", (req, res) => {
   const query = "SELECT MAX(post_id) AS last_id FROM posts;";
 
