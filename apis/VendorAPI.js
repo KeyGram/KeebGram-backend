@@ -144,4 +144,21 @@ router.get("/getVendorByAccountId", (req, res) => {
   });
 });
 
+router.get("/fetchVendorProductByColors", (req, res) => {
+  const { alpha, modifier, accent, legend } = req.query;
+
+  console.log(req.query)
+  
+  const query = "SELECT * FROM products WHERE alpha = ? AND modifier = ? AND accent = ? AND legend = ?";
+
+  db.query(query, [alpha, modifier, accent, legend], (err, results) => {
+    if (err) {
+      console.error(err);
+      return res.status(500).send("Error fetching products");
+    }
+
+    console.log(results);
+  })
+});
+
 module.exports = router;

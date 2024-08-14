@@ -69,7 +69,7 @@ router.get("/getOneByID", (req, res) => {
 
 router.get("/getOneByUsername", (req, res) => {
   const { username } = req.query;
-  
+
   console.log("Received username:", username); // Log the received username
 
   const query = "SELECT * FROM accounts WHERE display_name = ?";
@@ -94,9 +94,6 @@ router.get("/getOneByUsername", (req, res) => {
     }
   });
 });
-
-
-
 
 // Route to add an account
 router.post("/create", (req, res) => {
@@ -170,7 +167,12 @@ router.post("/update", (req, res) => {
     ],
     (err, result) => {
       if (err) {
-        res.status(500).send("Error updating account details");
+        console.log(err);
+        if (err?.errno == 1062) {
+          res.status(403).send("Account name already exists.")
+        } else {
+          res.status(500).send("Error updating account details");
+        }
         return;
       }
       res.send("Account details updated successfully");
@@ -194,7 +196,7 @@ router.delete("/delete", (req, res) => {
     }
 
     console.log(result);
-    
+
     if (result.affectedRows === 1) {
       res.status(200).send("Account deleted successfully");
     } else {
@@ -300,13 +302,13 @@ router.post("/verify", (req, res) => {
       if (results.length > 0) {
         const user = results[0];
 
-        if(user?.verification_token === token) {
-          console.log("token match")
+        if (user?.verification_token === token) {
+          console.log("token match");
 
           query = "UPDATE accounts SET is_verified = 1 WHERE email = ?";
 
           db.query(query, [user?.email], (err, results) => {
-            if(err) {
+            if (err) {
               res.status(500).send("Error updating account");
               return;
             }
@@ -314,19 +316,23 @@ router.post("/verify", (req, res) => {
             console.log(results);
 
             if (results?.changedRows > 0) {
-              res.status(200).json({message: "Account verified successfully", user: user });
+              res
+                .status(200)
+                .json({ message: "Account verified successfully", user: user });
             } else {
               res.status(400).send("Account already verified");
             }
-          })
-        } 
+          });
+        }
       }
     });
   } catch (error) {
     if (error.name === "TokenExpiredError") {
       res.status(401).send("Token Expired");
     } else {
-      res.status(404).json({message: "Matching token not found", error: error});
+      res
+        .status(404)
+        .json({ message: "Matching token not found", error: error });
     }
   }
 });
