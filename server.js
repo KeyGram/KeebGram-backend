@@ -64,35 +64,35 @@ const io = new Server(server, {
   },
 });
 
-io.on('connection', (socket) => {
-  console.log(`User connected: ${socket.id}`);
+// io.on('connection', (socket) => {
+//   console.log(`User connected: ${socket.id}`);
   
-  socket.on('post_created', () => {
-    console.log("Post created event");
-    socket.broadcast.emit('refresh_posts');
-  });
+//   socket.on('post_created', () => {
+//     console.log("Post created event");
+//     socket.broadcast.emit('refresh_posts');
+//   });
 
-  socket.on("joinRoom", (room) => {
-    socket.join(room);
-    console.log(`User joined room: ${room}`);
-  });
+//   socket.on("joinRoom", (room) => {
+//     socket.join(room);
+//     console.log(`User joined room: ${room}`);
+//   });
 
-  socket.on("comment_created", (data) => {
-    io.to(data?.post?.account_id).emit('receive_notification', { post: data?.post, message: `${data?.user?.display_name} commented on your post` });
-  });
+//   socket.on("comment_created", (data) => {
+//     io.to(data?.post?.account_id).emit('receive_notification', { post: data?.post, message: `${data?.user?.display_name} commented on your post` });
+//   });
 
-  socket.on("post_liked", (data) => {
-    io.to(data?.post?.account_id).emit('receive_notification', { post: data?.post, message: `${data?.user?.display_name} liked your post` });
-  });
+//   socket.on("post_liked", (data) => {
+//     io.to(data?.post?.account_id).emit('receive_notification', { post: data?.post, message: `${data?.user?.display_name} liked your post` });
+//   });
 
-  socket.on('alert_notification', (data) => {
-    console.log("Data", data);
-  });
+//   socket.on('alert_notification', (data) => {
+//     console.log("Data", data);
+//   });
 
-  socket.on("disconnect", () => {
-    console.log(`User disconnected: ${socket.id}`);
-  });
-});
+//   socket.on("disconnect", () => {
+//     console.log(`User disconnected: ${socket.id}`);
+//   });
+// });
 
 app.get('/keycaps', async (req, res) => {
   const { alpha, modifier, accent, legend } = req.query;

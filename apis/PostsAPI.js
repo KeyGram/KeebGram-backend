@@ -77,6 +77,8 @@ router.get("/next", (req, res) => {
       res.status(400).send("Error");
       return;
     }
+
+    console.log("Next ID: ", results)
     // Assuming results[0] contains the AUTO_INCREMENT value
     const nextId = results[0]?.last_id + 1;
 

@@ -70,8 +70,6 @@ router.get("/getOneByID", (req, res) => {
 router.get("/getOneByUsername", (req, res) => {
   const { username } = req.query;
 
-  console.log("Received username:", username); // Log the received username
-
   const query = "SELECT * FROM accounts WHERE display_name = ?";
 
   db.query(query, [username], (err, results) => {
@@ -81,10 +79,7 @@ router.get("/getOneByUsername", (req, res) => {
       return;
     }
 
-    console.log("Database results:", results); // Log query results
-
     if (results.length > 0) {
-      console.log("User found:", results[0]); // Log the found user
       const user = results[0];
       delete user.password;
       res.status(200).json(user);
