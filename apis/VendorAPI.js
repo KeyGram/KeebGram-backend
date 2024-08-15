@@ -146,8 +146,6 @@ router.get("/getVendorByAccountId", (req, res) => {
 
 router.get("/fetchVendorProductByColors", (req, res) => {
   const { alpha, modifier, accent, legend } = req.query;
-
-  console.log(req.query)
   
   const query = "SELECT * FROM products WHERE alpha = ? AND modifier = ? AND accent = ? AND legend = ?";
 
@@ -157,7 +155,11 @@ router.get("/fetchVendorProductByColors", (req, res) => {
       return res.status(500).send("Error fetching products");
     }
 
-    console.log(results);
+    if (results.length > 0) {
+      return res.status(200).send(results);
+    } else {
+      return res.status(404).send("No designs found");
+    }
   })
 });
 
