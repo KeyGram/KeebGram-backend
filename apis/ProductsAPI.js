@@ -2,7 +2,7 @@ const express = require("express");
 const db = require("../db");
 const router = express.Router();
 
-// Fetch products by vendor ID
+// Fetch products by vendor Id
 router.get("/getProductsByVendorId", (req, res) => {
   const { vendorId } = req.query;
   console.log("Fetching products for vendor ID:", vendorId); // Debugging
